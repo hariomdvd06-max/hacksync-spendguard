@@ -190,6 +190,19 @@ async function loadInitialData() {
         } catch (e) { }
     }
 
+    // Load user-scoped savings goal
+    const storedGoal = localStorage.getItem(`spendguard_savings_goal_${userId}`) || localStorage.getItem('spendguard_savings_goal');
+    if (storedGoal) {
+        try { state.savingsGoal = JSON.parse(storedGoal); } catch (e) { }
+    } else {
+        // Fresh accounts start with clean customizable goal
+        state.savingsGoal = {
+            title: 'Emergency Cushion Fund',
+            target: 50000,
+            saved: 0
+        };
+    }
+
     // 2. Load Expenses: Try Supabase live sync first
     let loadedFromRemote = false;
     if (window.SupabaseClient) {
@@ -570,24 +583,57 @@ function renderSavingsGoal() {
     }
 }
 
+// Savings Goal Modal & Customization Handlers (PS Requirement)
 function promptNewSavingsGoal() {
-    const current = state.savingsGoal || { title: 'Emergency Fund', target: 50000, saved: 21000 };
-    const newTitle = prompt('Enter Goal Name:', current.title);
-    if (!newTitle) return;
-    const newTarget = parseFloat(prompt('Enter Target Amount (₹):', current.target));
-    if (isNaN(newTarget) || newTarget <= 0) return;
-    const newSaved = parseFloat(prompt('Enter Amount Saved So Far (₹):', current.saved));
-    if (isNaN(newSaved) || newSaved < 0) return;
+    openModal('savingsGoalModal');
+    const goal = state.savingsGoal || { title: 'Emergency Cushion Fund', target: 50000, saved: 0 };
+    const nameInput = document.getElementById('goalNameInput');
+    const targetInput = document.getElementById('goalTargetInput');
+    const savedInput = document.getElementById('goalSavedInput');
+
+    if (nameInput) nameInput.value = goal.title || '';
+    if (targetInput) targetInput.value = goal.target || 50000;
+    if (savedInput) savedInput.value = goal.saved !== undefined ? goal.saved : 0;
+}
+
+function setGoalPreset(name, target) {
+    const nameInput = document.getElementById('goalNameInput');
+    const targetInput = document.getElementById('goalTargetInput');
+    if (nameInput) nameInput.value = name;
+    if (targetInput) targetInput.value = target;
+}
+
+function saveSavingsGoalFromModal() {
+    const nameInput = document.getElementById('goalNameInput');
+    const targetInput = document.getElementById('goalTargetInput');
+    const savedInput = document.getElementById('goalSavedInput');
+
+    const title = nameInput ? nameInput.value.trim() : 'Emergency Fund';
+    const target = parseFloat(targetInput ? targetInput.value : '50000');
+    const saved = parseFloat(savedInput ? savedInput.value : '0') || 0;
+
+    if (!title) {
+        showToast('Please enter a goal name.', 'error');
+        return;
+    }
+    if (isNaN(target) || target <= 0) {
+        showToast('Please enter a valid target amount (> 0).', 'error');
+        return;
+    }
 
     state.savingsGoal = {
-        title: newTitle,
-        target: newTarget,
-        saved: newSaved
+        title,
+        target,
+        saved: Math.max(0, saved)
     };
 
+    const userId = localStorage.getItem('userId') || state.user?.id || '00000000-0000-0000-0000-000000000000';
+    localStorage.setItem(`spendguard_savings_goal_${userId}`, JSON.stringify(state.savingsGoal));
     localStorage.setItem('spendguard_savings_goal', JSON.stringify(state.savingsGoal));
+
     renderSavingsGoal();
-    showToast('Savings Goal updated successfully!', 'success');
+    closeModal('savingsGoalModal');
+    showToast(`🎯 Savings Goal "${title}" updated successfully!`, 'success');
 }
 
 // Long-Term Compounding Impact Simulator (PS Requirement)
