@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "checkJs": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules", "dist"]
+}

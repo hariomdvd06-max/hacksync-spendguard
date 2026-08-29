@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackSync SpendGuard - Micro Expense Tracker & Financial Leakage Detection (Supabase)</title>
+    <meta name="description" content="Micro expense tracker and financial leakage detection system with Supabase PostgreSQL integration and local deterministic anomaly radar.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <div class="app-container">
+
+        <!-- ==================== 1. TOP NAVBAR COMPONENT ==================== -->
+        <header class="navbar glass-panel">
+            <a href="#landing" class="brand-wrapper" onclick="navigateTo('landing')">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <div class="brand-title">HackSync SpendGuard</div>
+                    <div class="brand-subtitle">Supabase PostgreSQL & Leakage Radar</div>
+                </div>
+            </a>
+
+            <!-- Navigation Links for Pages -->
+            <nav class="nav-links" id="mainNavLinks">
+                <a href="#landing" class="nav-link" id="nav-landing" onclick="navigateTo('landing')">🏠 Home</a>
+                <a href="#dashboard" class="nav-link active" id="nav-dashboard" onclick="navigateTo('dashboard')">📊 Dashboard</a>
+                <a href="#analytics" class="nav-link" id="nav-analytics" onclick="navigateTo('analytics')">📈 Analytics</a>
+                <a href="#budget" class="nav-link" id="nav-budget" onclick="navigateTo('budget')">🎯 Budget</a>
+                <a href="#leakage-report" class="nav-link" id="nav-leakage-report" onclick="navigateTo('leakage-report')">📡 Leakage Radar</a>
+                <a href="#profile" class="nav-link" id="nav-profile" onclick="navigateTo('profile')">⚙️ Settings</a>
+            </nav>
+
+            <div class="nav-actions">
+                <!-- Supabase Connection Badge -->
+                <button type="button" id="supabaseConnectionBadge" class="badge badge-supabase" onclick="openModal('supabaseConfigModal')" style="cursor: pointer; border: none;" title="Click to configure Supabase URL & Keys">
+                    <span class="badge-pulse"></span> <span id="supabaseBadgeText">Supabase Ready</span>
+                </button>
+
+                <!-- Theme Toggle Button -->
+                <button type="button" id="themeToggleBtn" class="btn btn-glass btn-sm" onclick="toggleTheme()" title="Toggle Dark/Light Theme">
+                    <span id="themeIcon">🌙</span> <span id="themeLabel">Dark</span>
+                </button>
+
+                <!-- Auth / Profile Badge -->
+                <button type="button" id="userNavBadge" class="btn btn-glass btn-sm" onclick="navigateTo('profile')" style="display: none; cursor: pointer;">
+                    👤 <span id="userNavName">Alex</span>
+                </button>
+
+                <!-- Sign In / Out Button -->
+                <button type="button" id="authNavBtn" class="btn btn-primary btn-sm" onclick="openModal('authModal')">
+                    Sign In
+                </button>
+            </div>
+        </header>
+
+        <!-- ==================== PAGE 1: LANDING PAGE ==================== -->
+        <section id="page-landing" class="page-view">
+            <div class="hero-section">
+                <div class="hero-pill">
+                    <span>⚡ Supabase PostgreSQL Powered</span> • Stop Silent Micro-Spending Bleed
+                </div>
+                <h1 class="hero-title">
+                    Eliminate Financial Leakage <br>
+                    <span class="gradient-text">Before It Drains Your Wealth</span>
+                </h1>
+                <p class="hero-subtitle">
+                    SpendGuard is the intelligent micro-expense tracker that detects "death by ₹100 chai", zombie OTT subscription rot, and impulse weekend surges using local deterministic logic and Supabase Realtime persistence.
+                </p>
+                <div class="hero-cta-row">
+                    <button type="button" class="btn btn-primary btn-lg btn-pulse" onclick="navigateTo('dashboard')">
+                        🚀 Launch Live Dashboard
+                    </button>
+                    <button type="button" class="btn btn-glass btn-lg" onclick="openModal('authModal')">
+                        🔑 Sign In / Sign Up
+                    </button>
+                    <button type="button" class="btn btn-glass btn-lg" onclick="openModal('supabaseConfigModal')">
+                        🔌 Connect Supabase DB
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon-box">☕</div>
+                    <h3 class="feature-title">Micro-Expense Drip Radar</h3>
+                    <p class="feature-desc">
+                        Identify unmonitored purchases under ₹500 that silently eat 25% of your income. Real-time daily drip-waste run-rate calculations.
+                    </p>
+                </div>
+
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon-box">🔁</div>
+                    <h3 class="feature-title">Zombie Subscription Hunter</h3>
+                    <p class="feature-desc">
+                        Expose overlapping streaming services, inactive software tiers, and recurring creep with automated rotation advice.
+                    </p>
+                </div>
+
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon-box">⚡</div>
+                    <h3 class="feature-title">Instant Local Categorization</h3>
+                    <p class="feature-desc">
+                        Blazing-fast zero-latency deterministic categorization with semantic pattern matching for Food, Transport, Entertainment, Shopping, Utilities, and Other.
+                    </p>
+                </div>
+
+                <div class="glass-panel feature-card">
+                    <div class="feature-icon-box">🐘</div>
+                    <h3 class="feature-title">Supabase PostgreSQL Backend</h3>
+                    <p class="feature-desc">
+                        Direct REST and Realtime synchronization across all tabs and devices backed by PostgreSQL with Row Level Security.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PAGE: LOGIN / SIGNUP PAGE ==================== -->
+        <section id="page-auth" class="page-view active">
+            <div style="max-width: 440px; margin: 40px auto 60px;">
+                <div class="glass-panel" style="padding: 32px 28px; text-align: center; border-radius: var(--radius-lg);">
+                    
+                    <!-- LOGO / TITLE -->
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 18px;">
+                        <div class="brand-icon" style="width: 44px; height: 44px; font-size: 22px;">⚡</div>
+                        <div style="text-align: left;">
+                            <div class="brand-title" style="font-size: 19px;" id="authPageHeading">Sign In to SpendGuard</div>
+                            <div class="brand-subtitle">Supabase PostgreSQL Authentication</div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 22px;" id="authPageSubheading">
+                        Access your real-time financial leakage radar and sync expenses across all devices.
+                    </p>
+
+                    <!-- Form -->
+                    <form id="authPageForm" onsubmit="handleAuthPageSubmit(event)">
+                        
+                        <!-- Text Input: Name (hidden by default for signup only) -->
+                        <div class="form-group" id="nameInputContainer" style="display: none; text-align: left;">
+                            <label class="form-label" for="nameInput">Full Name</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">👤</span>
+                                <input type="text" id="nameInput" name="nameInput" class="input-control has-icon" placeholder="Full Name" autocomplete="name">
+                            </div>
+                        </div>
+
+                        <!-- Text Input: Email -->
+                        <div class="form-group" style="text-align: left;">
+                            <label class="form-label" for="emailInput">Email Address</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">✉️</span>
+                                <input type="email" id="emailInput" name="emailInput" class="input-control has-icon" placeholder="Email" required autocomplete="email" value="alex.rivera@hacksync.dev">
+                            </div>
+                        </div>
+
+                        <!-- Password Input: Password (with Show/Hide Eye Button) -->
+                        <div class="form-group" style="text-align: left;">
+                            <label class="form-label" for="passwordInput">Password</label>
+                            <div class="input-wrapper" style="position: relative;">
+                                <span class="input-icon">🔒</span>
+                                <input type="password" id="passwordInput" name="passwordInput" class="input-control has-icon" placeholder="Password" required autocomplete="current-password" value="password123" style="padding-right: 42px;">
+                                <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility('passwordInput', 'togglePasswordIcon')" style="position: absolute; right: 12px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 15px; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 2;" title="Show/Hide Password" aria-label="Toggle password visibility">
+                                    <span id="togglePasswordIcon">👁️</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Error message (Red, hidden by default) -->
+                        <div id="errorMsg" style="display: none; color: var(--accent-rose); background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; font-weight: 600; margin-bottom: 16px; text-align: left;" role="alert">
+                            Invalid credentials. Please try again.
+                        </div>
+
+                        <!-- Loading Spinner (hidden by default) -->
+                        <div id="loadingSpinner" style="display: none; margin: 12px auto; text-align: center;">
+                            <div class="spinner" style="width: 28px; height: 28px; border: 3px solid rgba(62, 207, 142, 0.2); border-top-color: var(--supabase-green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 6px;"></div>
+                            <div style="font-size: 11px; color: var(--supabase-green); font-weight: 700;">Connecting to Supabase Auth...</div>
+                        </div>
+
+                        <!-- Button: Sign In / Sign Up -->
+                        <button type="submit" id="submitBtn" name="submitBtn" class="btn btn-primary btn-block btn-lg" style="margin-top: 6px;">
+                            Sign In
+                        </button>
+                    </form>
+
+                    <!-- Link: Toggle between login / signup -->
+                    <div style="margin-top: 20px; font-size: 13px; color: var(--text-secondary);">
+                        <a href="javascript:void(0)" id="toggleLink" name="toggleLink" onclick="toggleAuthPageMode()" style="color: var(--supabase-green); font-weight: 700; text-decoration: none;">
+                            Don't have account? Sign Up
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PAGE 2: DASHBOARD (MAIN) ==================== -->
+        <section id="page-dashboard" class="page-view">
+
+            <!-- ==================== TOP STATS CARDS (STEP 2) ==================== -->
+            <div class="dashboard-top-grid">
+                
+                <!-- Card 1 - Name: totalTodayCard | Title: "Total Today" | Color: Blue -->
+                <div id="totalTodayCard" class="metric-card glass-panel" style="--card-glow: rgba(59, 130, 246, 0.35); border-left: 3px solid #3b82f6;">
+                    <div class="metric-header">
+                        <span class="metric-title" style="color: #60a5fa;">⚡ Total Today</span>
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3);">Blue</span>
+                    </div>
+                    <div class="metric-value-row">
+                        <div id="totalToday" class="metric-value" style="color: #93c5fd;">₹0</div>
+                        <span class="badge btn-glass">Today</span>
+                    </div>
+                    <div class="metric-sub-row">
+                        <span>Daily Run-Rate</span>
+                        <span id="cardTodayTxnCount">0 txns</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 - Name: totalWeekCard | Title: "This Week" | Color: Purple -->
+                <div id="totalWeekCard" class="metric-card glass-panel" style="--card-glow: rgba(168, 85, 247, 0.35); border-left: 3px solid #a855f7;">
+                    <div class="metric-header">
+                        <span class="metric-title" style="color: #c084fc;">📅 This Week</span>
+                        <span class="badge" style="background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3);">Purple</span>
+                    </div>
+                    <div class="metric-value-row">
+                        <div id="totalWeek" class="metric-value" style="color: #e9d5ff;">₹0</div>
+                        <span class="badge badge-healthy" id="cardWeekBadge">Last 7d</span>
+                    </div>
+                    <div class="metric-sub-row">
+                        <span>Weekly Velocity</span>
+                        <span id="cardWeekAvgText">~₹0/day</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 - Name: totalMonthCard | Title: "This Month" | Color: Green -->
+                <div id="totalMonthCard" class="metric-card glass-panel" style="--card-glow: rgba(16, 185, 129, 0.35); border-left: 3px solid #10b981;">
+                    <div class="metric-header">
+                        <span class="metric-title" style="color: #34d399;">🎯 This Month</span>
+                        <a href="#budget" onclick="navigateTo('budget')" style="font-size: 11px; color: #34d399; text-decoration: underline;">Adjust Budget</a>
+                    </div>
+                    <div class="metric-value-row">
+                        <div id="totalMonth" class="metric-value" style="color: #6ee7b7;">₹0</div>
+                        <span id="metricBudgetStatusBadge" class="badge badge-healthy">On Track</span>
+                    </div>
+                    <div class="progress-bar-track">
+                        <div id="budgetProgressBar" class="progress-bar-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="metric-sub-row">
+                        <span id="metricBudgetSpentText">Spent: ₹0</span>
+                        <span id="metricBudgetLimitText">Budget: ₹35,000</span>
+                    </div>
+                </div>
+
+                <!-- Card 4 - Name: leakageScoreCard | Title: "Leakage Score" | Color: Dynamic -->
+                <div id="leakageScoreCard" class="metric-card glass-panel" style="--card-glow: rgba(244, 63, 94, 0.35); border-left: 3px solid #f43f5e;">
+                    <div class="metric-header">
+                        <span class="metric-title">📡 Leakage Score</span>
+                        <span class="badge badge-critical" id="leakCountBadge">0 Leaks</span>
+                    </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 2px;">
+                        <div>
+                            <div id="leakageScore" class="metric-value" style="color: var(--accent-emerald);">100<span style="font-size: 14px; color: var(--text-muted);">/100</span></div>
+                            <div id="leakageMessage" style="font-size: 11px; font-weight: 700; color: var(--accent-emerald);">"Keep it up!"</div>
+                        </div>
+                        <div id="healthScoreRing" class="ai-score-ring">
+                            <span id="healthGradeBadge" class="ai-score-number">A+</span>
+                        </div>
+                    </div>
+                    <div class="metric-sub-row" style="margin-top: 6px;">
+                        <span>Avoidable: <strong id="metricLeakageRate" style="color: var(--accent-rose);">₹0/mo</strong></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Main Dashboard 2-Column Grid -->
+            <div class="dashboard-grid">
+
+                <!-- Left Column: Expense Input Form & Quick Presets -->
+                <div class="dashboard-col">
+                    <div class="glass-panel form-card">
+                        <div class="metric-header" style="margin-bottom: 16px;">
+                            <h3 class="card-heading" style="font-size: 15px;">
+                                <span>➕</span> Expense Input Form
+                            </h3>
+                            <span class="badge badge-healthy">⚡ Fast Add &lt; 2s</span>
+                        </div>
+
+                        <form id="expenseForm" onsubmit="handleAddExpense(event)">
+                            
+                            <!-- 1. Text Input - Name: descriptionInput -->
+                            <div class="form-group">
+                                <label class="form-label" for="descriptionInput">
+                                    Description / Item Name * <span id="autoCatBadge" class="badge badge-supabase" style="display: none; font-size: 9px; padding: 1px 6px;">Auto-Categorized</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">📝</span>
+                                    <input type="text" id="descriptionInput" name="descriptionInput" class="input-control has-icon" placeholder="What did you spend on?" required autocomplete="off" oninput="handleDescriptionInput(this.value)">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <!-- 2. Number Input - Name: amountInput -->
+                                <div class="form-group">
+                                    <div class="label-split">
+                                        <label class="form-label" for="amountInput">Amount (₹) *</label>
+                                        <span id="amountValidationHint" style="font-size: 10px; color: var(--text-muted);">Enter amount</span>
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <span class="input-icon">₹</span>
+                                        <input type="number" id="amountInput" name="amountInput" class="input-control has-icon" placeholder="0" min="0" step="any" required oninput="handleAmountInput(event)">
+                                    </div>
+                                    <div id="amountPreviewText" class="amount-preview">Formatted: ₹0</div>
+                                </div>
+
+                                <!-- 4. Date Picker - Name: dateInput (Default: Today) -->
+                                <div class="form-group">
+                                    <div class="label-split">
+                                        <label class="form-label" for="dateInput">Date</label>
+                                        <button type="button" class="btn btn-glass btn-sm" style="padding: 1px 6px; font-size: 10px;" onclick="setDateTimeNow()">Today</button>
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <span class="input-icon">📅</span>
+                                        <input type="date" id="dateInput" name="dateInput" class="input-control has-icon" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <!-- 3. Dropdown - Name: categoryDropdown -->
+                                <div class="form-group">
+                                    <label class="form-label" for="categoryDropdown">Category</label>
+                                    <select id="categoryDropdown" name="categoryDropdown" class="input-control">
+                                        <option value="Food" selected>🍽️ Food</option>
+                                        <option value="Transport">🚕 Transport</option>
+                                        <option value="Entertainment">🎬 Entertainment</option>
+                                        <option value="Shopping">🛍️ Shopping</option>
+                                        <option value="Utilities">💡 Utilities</option>
+                                        <option value="Other">📦 Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="expensePaymentMethod">Payment Mode</label>
+                                    <select id="expensePaymentMethod" name="expensePaymentMethod" class="input-control">
+                                        <option value="UPI">📱 UPI / QR</option>
+                                        <option value="Card">💳 Card</option>
+                                        <option value="Cash">💵 Cash</option>
+                                        <option value="NetBanking">🏦 NetBanking</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="recurring-toggle-box">
+                                <label class="switch-container" for="expenseRecurring">
+                                    <input type="checkbox" id="expenseRecurring" name="expenseRecurring">
+                                    <span class="slider round"></span>
+                                </label>
+                                <div>
+                                    <label for="expenseRecurring" style="font-size: 12px; font-weight: 700; color: var(--text-primary); cursor: pointer;">Recurring Monthly Expense</label>
+                                    <div style="font-size: 10px; color: var(--text-muted);">Auto-flag as recurring bill or subscription</div>
+                                </div>
+                            </div>
+
+                            <!-- 5. Button - Name: addExpenseBtn | Label: "Add Expense" -->
+                            <button type="submit" id="addExpenseBtn" name="addExpenseBtn" class="btn btn-primary btn-block btn-pulse">
+                                <span>➕</span> Add Expense
+                            </button>
+                        </form>
+
+                        <!-- Instant 1-Click Micro-Presets -->
+                        <div class="presets-section">
+                            <div class="presets-title">⚡ Instant 1-Click Micro-Presets:</div>
+                            <div class="preset-chips">
+                                <button type="button" class="preset-chip" onclick="applyQuickPreset('Tapri Cutting Chai', 45, 'Food', 'UPI')">☕ ₹45 Chai</button>
+                                <button type="button" class="preset-chip" onclick="applyQuickPreset('Canteen Lunch Thali', 140, 'Food', 'UPI')">🥪 ₹140 Lunch</button>
+                                <button type="button" class="preset-chip" onclick="applyQuickPreset('Cab / Auto Commute', 180, 'Transport', 'UPI')">🛺 ₹180 Cab</button>
+                                <button type="button" class="preset-chip" onclick="applyQuickPreset('OTT Streaming Sub', 499, 'Entertainment', 'Card', true)">📺 ₹499 OTT</button>
+                                <button type="button" class="preset-chip" onclick="applyQuickPreset('Late Night Delivery', 280, 'Food', 'UPI')">🍕 ₹280 Food</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SAVINGS GOAL TRACKER (PS REQUIREMENT) -->
+                    <div class="glass-panel" style="padding: 20px; border-radius: var(--radius-lg);">
+                        <div class="metric-header" style="margin-bottom: 12px;">
+                            <div>
+                                <span class="metric-title" style="color: #60a5fa; font-size: 13px;">
+                                    <span>🎯</span> Active Savings Goal Tracker
+                                </span>
+                            </div>
+                            <button type="button" class="btn btn-glass btn-sm" onclick="promptNewSavingsGoal()">✏️ Edit Goal</button>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                            <div id="goalTitleDisplay" style="font-weight: 700; font-size: 14px; color: var(--text-primary);">Emergency Fund & Tech Upgrade</div>
+                            <div id="goalPercentDisplay" style="font-size: 13px; font-weight: 800; color: #4edea3; font-family: 'JetBrains Mono', monospace;">42%</div>
+                        </div>
+
+                        <div class="progress-bar-track" style="margin: 8px 0;">
+                            <div id="goalProgressBar" class="progress-bar-fill" style="width: 42%; background: linear-gradient(90deg, #3b82f6, #4edea3);"></div>
+                        </div>
+
+                        <div class="metric-sub-row" style="font-size: 12px; margin-top: 6px;">
+                            <span>Saved: <strong id="goalSavedAmountText" style="color: var(--text-primary);">₹21,000</strong></span>
+                            <span>Target: <strong id="goalTargetAmountText" style="color: var(--text-secondary);">₹50,000</strong></span>
+                        </div>
+
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(59, 130, 246, 0.08); border-radius: var(--radius-sm); border: 1px solid rgba(59, 130, 246, 0.2); font-size: 11px; color: #93c5fd; display: flex; align-items: center; gap: 8px;">
+                            <span>🚀</span>
+                            <span id="goalRunwayMessage">On track to complete goal in ~3.2 months with current monthly surplus pace!</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Charts & Recent Transactions -->
+                <div class="dashboard-col">
+                    
+                    <!-- Charts Grid (Step: Charts) -->
+                    <div class="charts-row">
+                        <!-- 1. Pie Chart - Name: categoryPieChart | Title: "Spending by Category" -->
+                        <div class="glass-panel chart-card">
+                            <div class="metric-header">
+                                <span class="metric-title"><span>🥧</span> Spending by Category</span>
+                                <span class="badge btn-glass" id="topCatBadge">Top: Food</span>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="categoryPieChart" name="categoryPieChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 2. Line Chart - Name: trendLineChart | Title: "Daily Spending (30 days)" -->
+                        <div class="glass-panel chart-card">
+                            <div class="metric-header">
+                                <span class="metric-title"><span>📈</span> Daily Spending (30 days)</span>
+                                <span class="badge badge-supabase">30 Days</span>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="trendLineChart" name="trendLineChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LONG-TERM FINANCIAL IMPACT & COMPOUNDING CALCULATOR (PS REQUIREMENT) -->
+                    <div class="glass-panel" style="padding: 22px; margin-bottom: 24px; border: 1px solid rgba(78, 222, 163, 0.25);">
+                        <div class="metric-header" style="margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span class="metric-title" style="color: var(--accent-emerald); font-size: 14px; font-weight: 700;">
+                                    <span>💡</span> Future Wealth Opportunity Cost of Daily Purchases
+                                </span>
+                                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
+                                    What if you invested your small daily purchases into an Index SIP (@ 12% p.a.) instead of spending them?
+                                </div>
+                            </div>
+
+                            <!-- Simulator Quick Preset Buttons -->
+                            <div style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap;">
+                                <button type="button" class="pill-btn sim-pill-btn" data-val="30" onclick="simulateDailyImpact(30)">☕ ₹30/day</button>
+                                <button type="button" class="pill-btn sim-pill-btn" data-val="80" onclick="simulateDailyImpact(80)">🚕 ₹80/day</button>
+                                <button type="button" class="pill-btn sim-pill-btn active" data-val="150" onclick="simulateDailyImpact(150)">🍔 ₹150/day</button>
+                                <button type="button" class="pill-btn sim-pill-btn" data-val="300" onclick="simulateDailyImpact(300)">🛍️ ₹300/day</button>
+                            </div>
+                        </div>
+
+                        <!-- 4-Period High-Contrast Compounding Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 14px;">
+                            
+                            <div style="background: rgba(8, 15, 20, 0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 14px;">
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">1 Month Outflow</div>
+                                <div id="impactVal1M" style="font-size: 20px; font-weight: 800; color: #fff; font-family: 'JetBrains Mono', monospace; margin: 4px 0;">₹4,500</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Direct out-of-pocket cash</div>
+                            </div>
+
+                            <div style="background: rgba(8, 15, 20, 0.7); border: 1px solid var(--border-glass); border-radius: var(--radius-md); padding: 14px;">
+                                <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">1 Year Loss</div>
+                                <div id="impactVal1Y" style="font-size: 20px; font-weight: 800; color: var(--accent-amber); font-family: 'JetBrains Mono', monospace; margin: 4px 0;">₹54,000</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Annual accumulation</div>
+                            </div>
+
+                            <div style="background: rgba(8, 15, 20, 0.7); border: 1px solid rgba(78, 222, 163, 0.25); border-radius: var(--radius-md); padding: 14px;">
+                                <div style="font-size: 11px; color: #4edea3; font-weight: 700; text-transform: uppercase;">5 Years (SIP @ 12%)</div>
+                                <div id="impactVal5Y" style="font-size: 20px; font-weight: 800; color: #4edea3; font-family: 'JetBrains Mono', monospace; margin: 4px 0;">₹3,71,189</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Compounded wealth generated</div>
+                            </div>
+
+                            <div style="background: rgba(8, 15, 20, 0.7); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: var(--radius-md); padding: 14px;">
+                                <div style="font-size: 11px; color: #60a5fa; font-weight: 700; text-transform: uppercase;">10 Years (SIP @ 12%)</div>
+                                <div id="impactVal10Y" style="font-size: 20px; font-weight: 800; color: #60a5fa; font-family: 'JetBrains Mono', monospace; margin: 4px 0;">₹10,45,526</div>
+                                <div style="font-size: 11px; color: var(--text-secondary);">Over ₹10.45 Lakhs corpus!</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Table - Name: expensesTable -->
+                    <div class="glass-panel table-panel">
+                        <div class="metric-header">
+                            <span class="metric-title"><span>📑</span> Recent Transactions (Stream)</span>
+                            <a href="#analytics" onclick="navigateTo('analytics')" style="font-size: 11px; color: var(--supabase-green); text-decoration: underline;">View Full Ledger</a>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="expensesTable" name="expensesTable" class="styled-table">
+                                <thead>
+                                    <tr>
+                                        <th>Description</th>
+                                        <th>Amount</th>
+                                        <th>Category</th>
+                                        <th>Date</th>
+                                        <th style="text-align: right;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expensesTableBody">
+                                    <!-- Populated dynamically from query result -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==================== PAGE 3: DETAILED ANALYTICS ==================== -->
+        <section id="page-analytics" class="page-view">
+            <div class="metric-header" style="margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 800;">📈 Monthly Financial Analytics & Category Reports</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Historical spend distributions, category budget vs actual summaries, and trend velocity.</p>
+                </div>
+                
+                <!-- Filter Controls: Month & Year Selectors -->
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <!-- 1. Dropdown - Month selector (Jan - Dec) -->
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <label for="monthSelect" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Month:</label>
+                        <select id="monthSelect" name="monthSelect" class="input-control" style="padding: 6px 12px; font-size: 13px;" onchange="handleAnalyticsFilterChange()">
+                            <option value="01">January</option>
+                            <option value="02">February</option>
+                            <option value="03">March</option>
+                            <option value="04">April</option>
+                            <option value="05">May</option>
+                            <option value="06">June</option>
+                            <option value="07">July</option>
+                            <option value="08" selected>August</option>
+                            <option value="09">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+
+                    <!-- 2. Dropdown - Year selector (2024, 2025, 2026) -->
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <label for="yearSelect" style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Year:</label>
+                        <select id="yearSelect" name="yearSelect" class="input-control" style="padding: 6px 12px; font-size: 13px;" onchange="handleAnalyticsFilterChange()">
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026" selected>2026</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 6px;">
+                        <button type="button" class="btn btn-glass btn-sm" onclick="exportToCSV()">📥 CSV</button>
+                        <button type="button" class="btn btn-glass btn-sm" onclick="exportToJSON()">💾 JSON</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics 2-Column Grid: Bar Chart & Summary Table -->
+            <div class="dashboard-grid" style="margin-bottom: 24px;">
+                
+                <!-- 3. Bar Chart - Name: analyticsBarChart (Category breakdown for month) -->
+                <div class="glass-panel chart-card">
+                    <div class="metric-header">
+                        <span class="metric-title" id="analyticsBarChartTitle">📊 Category Spending (Month)</span>
+                        <span class="badge badge-supabase" id="analyticsMonthTotalBadge">Total: ₹0</span>
+                    </div>
+                    <div class="chart-box" style="height: 300px;">
+                        <canvas id="analyticsBarChart" name="analyticsBarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 4. Summary Table - Category | Spent | Budget | Remaining -->
+                <div class="glass-panel table-panel">
+                    <div class="metric-header">
+                        <span class="metric-title">📋 Category Budget Summary</span>
+                        <span class="badge btn-glass" id="summaryMonthLabel">Aug 2026</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="analyticsSummaryTable" name="analyticsSummaryTable" class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Spent</th>
+                                    <th>Budget</th>
+                                    <th>Remaining</th>
+                                </tr>
+                            </thead>
+                            <tbody id="analyticsSummaryTableBody">
+                                <!-- Populated dynamically from getMonthlyAnalytics query -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Full Filterable Transaction Ledger -->
+            <div class="glass-panel table-panel">
+                <div class="metric-header">
+                    <span class="metric-title">Full Transaction Ledger</span>
+                    <input type="text" id="analyticsSearch" class="input-control" placeholder="🔍 Search transactions..." style="max-width: 280px;" oninput="handleSearch(event)">
+                </div>
+
+                <div class="category-filter-bar">
+                    <button type="button" class="pill-btn active" data-category="ALL" onclick="setCategoryFilter('ALL')">All Categories</button>
+                    <button type="button" class="pill-btn" data-category="Food" onclick="setCategoryFilter('Food')">🍽️ Food</button>
+                    <button type="button" class="pill-btn" data-category="Transport" onclick="setCategoryFilter('Transport')">🚕 Transport</button>
+                    <button type="button" class="pill-btn" data-category="Entertainment" onclick="setCategoryFilter('Entertainment')">🎬 Entertainment</button>
+                    <button type="button" class="pill-btn" data-category="Shopping" onclick="setCategoryFilter('Shopping')">🛍️ Shopping</button>
+                    <button type="button" class="pill-btn" data-category="Utilities" onclick="setCategoryFilter('Utilities')">💡 Utilities</button>
+                    <button type="button" class="pill-btn" data-category="Other" onclick="setCategoryFilter('Other')">📦 Other</button>
+                </div>
+
+                <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Type</th>
+                                <th style="text-align: right;">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fullLedgerTableBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PAGE 4: BUDGET MANAGEMENT ==================== -->
+        <section id="page-budget" class="page-view">
+            <div class="metric-header" style="margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 800;">🎯 Category Budget Setup & Warnings</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Set monthly category caps. System triggers automated warnings at 80% and 100% threshold capacity.</p>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="saveBudgetSetup()">💾 Save Budget Limits</button>
+            </div>
+
+            <!-- Global Monthly Target Input -->
+            <div class="glass-panel" style="padding: 20px; margin-bottom: 24px;">
+                <div class="form-row" style="align-items: center;">
+                    <div>
+                        <div style="font-size: 15px; font-weight: 700;">Overall Monthly Target</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">Combined ceiling across all 6 spending categories</div>
+                    </div>
+                    <div>
+                        <input type="number" id="budgetTotalInput" class="input-control" value="35000" min="1000" step="500" style="font-size: 18px; font-weight: 700; font-family: 'JetBrains Mono', monospace;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Setup Cards -->
+            <div class="budget-setup-grid" id="budgetCategoryGrid">
+                <!-- Rendered dynamically by app.js -->
+            </div>
+        </section>
+
+        <!-- ==================== PAGE 5: FINANCIAL LEAKAGE REPORT ==================== -->
+        <section id="page-leakage-report" class="page-view">
+            <div class="metric-header" style="margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 800;">📡 Financial Leakage Radar Diagnosis</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Autonomous detection of recurring micro-leaks, zombie subscriptions, and impulse surges.</p>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" onclick="runFinancialAudit()">⚡ Run Diagnostic Audit</button>
+            </div>
+
+            <!-- Health Score Banner -->
+            <div class="glass-panel" style="padding: 24px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap;">
+                <div class="ai-score-ring" style="width: 80px; height: 80px; border-width: 4px;">
+                    <span id="reportScoreRingNumber" style="font-size: 26px; font-weight: 800;">85</span>
+                    <span style="font-size: 10px; color: var(--text-muted);">Score</span>
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-size: 18px; font-weight: 800; color: #fff;" id="reportHealthTitle">Financial Health: Good With Minor Leaks</div>
+                    <div style="font-size: 13px; color: var(--accent-rose); font-weight: 700; margin: 4px 0;" id="reportLeakRate">
+                        Identified ₹3,200/month in avoidable financial leakage
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-secondary);" id="reportHealthSummary">
+                        Your highest leak centers around high-frequency micro-spends under ₹500.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leakage Patterns List -->
+            <div class="glass-panel leak-panel" style="margin-bottom: 24px;">
+                <h3 class="card-heading" style="font-size: 16px; margin-bottom: 16px;">
+                    <span>🚨</span> Flagged Leakage Patterns
+                </h3>
+                <div class="leak-cards-list" id="reportLeaksList">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Actionable Savings Roadmap -->
+            <div class="glass-panel" style="padding: 24px;">
+                <h3 class="card-heading" style="font-size: 16px; margin-bottom: 12px; color: var(--accent-amber);">
+                    <span>💡</span> Actionable 30-Day Savings Blueprint
+                </h3>
+                <div id="reportRoadmapList" style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--text-primary); line-height: 1.6;">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== PAGE 6: USER PROFILE & SETTINGS ==================== -->
+        <section id="page-profile" class="page-view">
+            <div class="metric-header" style="margin-bottom: 20px;">
+                <div>
+                    <h2 style="font-size: 22px; font-weight: 800;">⚙️ User Profile & App Settings</h2>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Manage your profile, preferred currency, and financial preferences.</p>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 class="card-heading" style="font-size: 15px; margin-bottom: 14px;">👤 User Profile</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="profileNameInput">Full Name</label>
+                        <input type="text" id="profileNameInput" class="input-control" value="HARIOM DVD">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="profileEmailInput">Email Address</label>
+                        <input type="email" id="profileEmailInput" class="input-control" value="hariomdvd06@gmail.com" readonly style="opacity: 0.8; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="profileCurrencySelect">Currency Symbol</label>
+                        <select id="profileCurrencySelect" class="input-control" onchange="handleCurrencyChange(event)">
+                            <option value="₹" selected>₹ - Indian Rupee (INR)</option>
+                            <option value="$">$ - US Dollar (USD)</option>
+                            <option value="€">€ - Euro (EUR)</option>
+                            <option value="£">£ - British Pound (GBP)</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="saveProfileSettings()">Save Profile</button>
+                </div>
+
+                <div class="glass-panel" style="padding: 24px;">
+                    <h3 class="card-heading" style="font-size: 15px; margin-bottom: 14px;">🔒 Cloud Database Security</h3>
+                    
+                    <div style="background: rgba(62, 207, 142, 0.08); border: 1px solid rgba(62, 207, 142, 0.25); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; gap: 8px; color: var(--supabase-green); font-weight: 700; font-size: 13px;">
+                            <span class="badge-pulse"></span> Supabase PostgreSQL Database Connected
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 6px;">
+                            Database connection string and API keys are stored securely on the server backend environment (.env). Sensitive credentials are never exposed to public view.
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span>⚡</span> <span>Realtime PostgreSQL Event Stream: <strong>Active</strong></span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span>🛡️</span> <span>Local Deterministic Leakage Radar: <strong>Active</strong></span>
+                        </div>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid var(--border-glass); margin: 20px 0;">
+
+                    <h4 style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">Curated Test Scenarios</h4>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button type="button" class="btn btn-glass btn-sm" onclick="loadScenario('urbanProfessional')">🏢 Urban Pro</button>
+                        <button type="button" class="btn btn-glass btn-sm" onclick="loadScenario('collegeStudent')">🎓 Student</button>
+                        <button type="button" class="btn btn-glass btn-sm" onclick="loadScenario('frugalSaver')">🛡️ Frugal</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- Auth Modal (Sign In / Sign Up) -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="authModalTitle">🔑 Sign In to SpendGuard</h3>
+                <button type="button" class="close-btn" onclick="closeModal('authModal')">✕</button>
+            </div>
+            <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;" id="authModalDesc">
+                Access your real-time financial leakage radar and sync data via Supabase.
+            </p>
+
+            <div class="form-group" id="signupNameGroup" style="display: none;">
+                <label class="form-label" for="authName">Full Name</label>
+                <input type="text" id="authName" class="input-control" placeholder="Alex Rivera">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="authEmail">Email Address</label>
+                <input type="email" id="authEmail" class="input-control" placeholder="user@example.com" value="alex.rivera@hacksync.dev">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="authPassword">Password</label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="authPassword" class="input-control" placeholder="••••••••" value="password123" style="padding-right: 42px;">
+                    <button type="button" onclick="togglePasswordVisibility('authPassword', 'modalPasswordIcon')" style="position: absolute; right: 12px; background: transparent; border: none; cursor: pointer; color: var(--text-secondary); font-size: 15px; padding: 4px; display: flex; align-items: center; justify-content: center; z-index: 2;" title="Show/Hide Password" aria-label="Toggle password visibility">
+                        <span id="modalPasswordIcon">👁️</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button type="button" class="btn btn-glass" id="authToggleBtn" onclick="toggleAuthMode()">Switch to Sign Up</button>
+                <button type="button" class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Sign In</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MOBILE BOTTOM NAVIGATION BAR ==================== -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <a href="#landing" class="mobile-nav-item" id="mob-nav-landing" onclick="navigateTo('landing')">
+            <span class="mobile-nav-icon">🏠</span>
+            <span class="mobile-nav-label">Home</span>
+        </a>
+        <a href="#dashboard" class="mobile-nav-item active" id="mob-nav-dashboard" onclick="navigateTo('dashboard')">
+            <span class="mobile-nav-icon">📊</span>
+            <span class="mobile-nav-label">Dashboard</span>
+        </a>
+        <a href="#analytics" class="mobile-nav-item" id="mob-nav-analytics" onclick="navigateTo('analytics')">
+            <span class="mobile-nav-icon">📈</span>
+            <span class="mobile-nav-label">Analytics</span>
+        </a>
+        <a href="#budget" class="mobile-nav-item" id="mob-nav-budget" onclick="navigateTo('budget')">
+            <span class="mobile-nav-icon">🎯</span>
+            <span class="mobile-nav-label">Budget</span>
+        </a>
+        <a href="#leakage-report" class="mobile-nav-item" id="mob-nav-leakage-report" onclick="navigateTo('leakage-report')">
+            <span class="mobile-nav-icon">📡</span>
+            <span class="mobile-nav-label">Leakage</span>
+        </a>
+        <a href="#profile" class="mobile-nav-item" id="mob-nav-profile" onclick="navigateTo('profile')">
+            <span class="mobile-nav-icon">⚙️</span>
+            <span class="mobile-nav-label">Settings</span>
+        </a>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="leakage_detector.js"></script>
+    <script src="supabase_client.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
