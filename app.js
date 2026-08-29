@@ -1212,8 +1212,34 @@ function renderLeakageReportView() {
 }
 
 function runFinancialAudit() {
+    const btn = document.getElementById('runAuditBtn');
+    if (btn) {
+        btn.innerHTML = '🔄 Scanning 30-Day Transactions...';
+        btn.disabled = true;
+    }
+
+    setTimeout(() => {
+        renderLeakageReportView();
+        renderDashboardTopCards();
+        if (btn) {
+            btn.innerHTML = '⚡ Run Diagnostic Audit';
+            btn.disabled = false;
+        }
+        showToast('⚡ Diagnostic Audit Completed! Leakage Radar updated.', 'success');
+    }, 600);
+}
+
+function loadDemoScenario(scenarioKey) {
+    const datasets = window.LeakageDetector.getSampleDatasets();
+    const scenario = datasets[scenarioKey];
+    if (!scenario) return;
+
+    state.expenses = [...scenario.expenses];
+    state.monthlyBudget = scenario.monthlyBudget || 35000;
+    saveExpensesToLocal();
+    refreshAllUI();
     renderLeakageReportView();
-    showToast('⚡ Financial Leakage Radar audit updated!', 'success');
+    showToast(`👔 Loaded "${scenario.name}" with realistic leaks!`, 'success');
 }
 
 // ==================== AUTHENTICATION (SUPABASE) ====================

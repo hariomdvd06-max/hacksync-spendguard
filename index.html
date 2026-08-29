@@ -1984,12 +1984,16 @@ input:checked + .slider:before {
 
         <!-- ==================== PAGE 5: FINANCIAL LEAKAGE REPORT ==================== -->
         <section id="page-leakage-report" class="page-view">
-            <div class="metric-header" style="margin-bottom: 20px;">
+            <div class="metric-header" style="margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
                 <div>
                     <h2 style="font-size: 22px; font-weight: 800;">📡 Financial Leakage Radar Diagnosis</h2>
                     <p style="font-size: 13px; color: var(--text-secondary);">Autonomous detection of recurring micro-leaks, zombie subscriptions, and impulse surges.</p>
                 </div>
-                <button type="button" class="btn btn-primary btn-sm" onclick="runFinancialAudit()">⚡ Run Diagnostic Audit</button>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+                    <button type="button" class="btn btn-glass btn-sm" onclick="loadDemoScenario('urbanProfessional')">👔 Urban Pro Demo</button>
+                    <button type="button" class="btn btn-glass btn-sm" onclick="loadDemoScenario('collegeStudent')">🎓 Student Drain Demo</button>
+                    <button type="button" id="runAuditBtn" class="btn btn-primary btn-sm" onclick="runFinancialAudit()">⚡ Run Diagnostic Audit</button>
+                </div>
             </div>
 
             <!-- Health Score Banner -->
