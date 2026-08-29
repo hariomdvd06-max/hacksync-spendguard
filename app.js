@@ -596,6 +596,32 @@ function promptNewSavingsGoal() {
     if (savedInput) savedInput.value = goal.saved !== undefined ? goal.saved : 0;
 }
 
+function selectQuickGoal(title, target) {
+    const currentSaved = (state.savingsGoal && state.savingsGoal.saved !== undefined) ? state.savingsGoal.saved : 0;
+    state.savingsGoal = {
+        title,
+        target: Number(target),
+        saved: currentSaved
+    };
+
+    const userId = localStorage.getItem('userId') || state.user?.id || '00000000-0000-0000-0000-000000000000';
+    localStorage.setItem(`spendguard_savings_goal_${userId}`, JSON.stringify(state.savingsGoal));
+    localStorage.setItem('spendguard_savings_goal', JSON.stringify(state.savingsGoal));
+
+    renderSavingsGoal();
+
+    // Update active chip UI
+    document.querySelectorAll('.goal-switch-chip').forEach(btn => {
+        if (btn.textContent.includes(title.slice(0, 5))) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    showToast(`🎯 Target Goal switched to "${title}" (₹${Number(target).toLocaleString('en-IN')})!`, 'success');
+}
+
 function setGoalPreset(name, target) {
     const nameInput = document.getElementById('goalNameInput');
     const targetInput = document.getElementById('goalTargetInput');
