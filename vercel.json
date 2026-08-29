@@ -1,13 +1,6 @@
 {
-  "version": 2,
-  "cleanUrls": true,
-  "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://spendguard-backend-mt5m.onrender.com/api/$1" },
+    { "source": "/((?!.*\\..*).*)", "destination": "/index.html" }
   ]
 }
