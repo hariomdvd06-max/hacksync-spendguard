@@ -53,9 +53,10 @@ async function initApp() {
     setDateTimeNow();
     updateAuthUI();
 
-    // 1. Auto-load Supabase credentials from .env via backend API
+    // 1. Auto-load Supabase credentials from .env via backend API (supports local or separate remote backend)
     try {
-        const cfgResp = await fetch('/api/config');
+        const backendBase = window.BACKEND_API_URL || localStorage.getItem('backend_api_url') || '';
+        const cfgResp = await fetch(`${backendBase}/api/config`);
         if (cfgResp.ok) {
             const cfg = await cfgResp.json();
             if (cfg.supabase && cfg.supabase.isConfigured && cfg.supabase.url && cfg.supabase.anonKey) {
@@ -67,7 +68,7 @@ async function initApp() {
             }
         }
     } catch (e) {
-        console.log('Running in static mode, using localStorage config.');
+        console.log('Running in static mode or remote backend unavailable, using client config.');
     }
 
     updateSupabaseBadge();
