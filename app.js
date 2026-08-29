@@ -53,9 +53,12 @@ async function initApp() {
     setDateTimeNow();
     updateAuthUI();
 
-    // 1. Auto-load Supabase credentials from .env via backend API (supports local or separate remote backend)
+    // 1. Auto-load Supabase credentials from .env via backend API (local server or Render production backend)
     try {
-        const backendBase = window.BACKEND_API_URL || localStorage.getItem('backend_api_url') || '';
+        const DEFAULT_PROD_BACKEND = 'https://spendguard-backend-mt5m.onrender.com';
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const backendBase = isLocalhost ? '' : (window.BACKEND_API_URL || localStorage.getItem('backend_api_url') || DEFAULT_PROD_BACKEND);
+        
         const cfgResp = await fetch(`${backendBase}/api/config`);
         if (cfgResp.ok) {
             const cfg = await cfgResp.json();
@@ -68,7 +71,7 @@ async function initApp() {
             }
         }
     } catch (e) {
-        console.log('Running in static mode or remote backend unavailable, using client config.');
+        console.log('Backend config fetch notice, using cached client configuration.');
     }
 
     updateSupabaseBadge();
@@ -106,7 +109,7 @@ function setupRouter() {
     window.addEventListener('hashchange', () => {
         const currentToken = localStorage.getItem('sessionToken');
         let target = window.location.hash.replace('#', '') || 'auth';
-        
+
         // Protect internal pages: redirect to auth if not logged in
         if (!currentToken && target !== 'landing' && target !== 'auth') {
             target = 'auth';
@@ -184,7 +187,7 @@ async function loadInitialData() {
             if (parsed && typeof parsed === 'object') {
                 state.categoryBudgets = { ...state.categoryBudgets, ...parsed };
             }
-        } catch (e) {}
+        } catch (e) { }
     }
 
     // 2. Load Expenses: Try Supabase live sync first
@@ -230,7 +233,7 @@ function saveExpensesToLocal() {
 
 function handleDescriptionInput(value) {
     if (!value || value.trim().length < 2) return;
-    
+
     // Pure Local Logic Semantic Categorization (< 1ms)
     const detectedCategory = window.LeakageDetector.categorize(value);
     const catSelect = document.getElementById('expenseCategory');
@@ -316,7 +319,7 @@ async function handleAddExpense(e) {
     const category = categorySelect ? categorySelect.value : 'Food';
     const payment_method = paymentMethodSelect ? paymentMethodSelect.value : 'UPI';
     const is_recurring = isRecurringCheck ? isRecurringCheck.checked : false;
-    
+
     let rawDate = dateInput ? dateInput.value : '';
     let date = rawDate ? (rawDate.includes('T') ? rawDate.split('T')[0] : rawDate) : new Date().toISOString().split('T')[0];
 
@@ -402,7 +405,7 @@ function applyQuickPreset(description, amount, category, paymentMethod = 'UPI', 
     if (preview) preview.textContent = `Formatted: ${state.currency}${amount.toLocaleString('en-IN')}`;
     const hint = document.getElementById('amountValidationHint');
     if (hint) hint.textContent = '⚡ Preset Applied';
-    
+
     setDateTimeNow();
     handleAddExpense(null);
 }
@@ -525,12 +528,12 @@ function renderDashboardTopCards() {
     }
 
     renderSavingsGoal();
-    
+
     // Dynamically calculate user's real daily micro-spend or use default
     const userMicroSpends = state.expenses.filter(e => Number(e.amount) < 500);
     const userMicroTotal = userMicroSpends.reduce((s, e) => s + Number(e.amount), 0);
     const userDailyAvg = userMicroSpends.length > 0 ? Math.round(userMicroTotal / Math.max(1, userMicroSpends.length)) : (state.simulatedDailyAmount || 150);
-    
+
     simulateDailyImpact(state.simulatedDailyAmount || userDailyAvg);
 }
 
@@ -675,7 +678,7 @@ function renderDashboardCharts() {
     // 2. Data Source: trendData (Daily Spending 30 Days)
     const dailyMap = {};
     const now = new Date();
-    
+
     // Generate past 30 days continuous timeline
     for (let i = 29; i >= 0; i--) {
         const d = new Date(now);
@@ -721,27 +724,27 @@ function renderDashboardCharts() {
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: { 
-                        ticks: { 
-                            color: isLight ? '#64748b' : '#94a3b8', 
+                    x: {
+                        ticks: {
+                            color: isLight ? '#64748b' : '#94a3b8',
                             font: { size: 9 },
                             maxTicksLimit: 8
-                        }, 
-                        grid: { display: false } 
+                        },
+                        grid: { display: false }
                     },
-                    y: { 
-                        ticks: { 
-                            color: isLight ? '#64748b' : '#94a3b8', 
-                            font: { size: 10 } 
-                        }, 
-                        grid: { color: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.04)' } 
+                    y: {
+                        ticks: {
+                            color: isLight ? '#64748b' : '#94a3b8',
+                            font: { size: 10 }
+                        },
+                        grid: { color: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.04)' }
                     }
                 },
-                plugins: { 
+                plugins: {
                     legend: { display: false },
                     tooltip: {
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return ` Spent: ${state.currency}${context.parsed.y.toLocaleString('en-IN')}`;
                             }
                         }
@@ -826,7 +829,7 @@ async function renderAnalyticsView() {
 
     const monthNames = { '01': 'Jan', '02': 'Feb', '03': 'Mar', '04': 'Apr', '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Aug', '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dec' };
     const monthLabel = `${monthNames[selectedMonth] || selectedMonth} ${selectedYear}`;
-    
+
     const summaryLabel = document.getElementById('summaryMonthLabel');
     if (summaryLabel) summaryLabel.textContent = monthLabel;
 
@@ -879,9 +882,9 @@ async function renderAnalyticsView() {
                 maintainAspectRatio: false,
                 scales: {
                     x: { ticks: { color: isLight ? '#64748b' : '#94a3b8', font: { size: 11 } }, grid: { display: false } },
-                    y: { 
-                        ticks: { color: isLight ? '#64748b' : '#94a3b8', font: { size: 10 } }, 
-                        grid: { color: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.04)' } 
+                    y: {
+                        ticks: { color: isLight ? '#64748b' : '#94a3b8', font: { size: 10 } },
+                        grid: { color: isLight ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.04)' }
                     }
                 },
                 plugins: {
@@ -941,8 +944,8 @@ async function renderAnalyticsView() {
     }
     if (state.searchQuery) {
         const q = state.searchQuery.toLowerCase();
-        filtered = filtered.filter(e => 
-            (e.description || e.title || '').toLowerCase().includes(q) || 
+        filtered = filtered.filter(e =>
+            (e.description || e.title || '').toLowerCase().includes(q) ||
             (e.category || '').toLowerCase().includes(q) ||
             (e.payment_method && e.payment_method.toLowerCase().includes(q))
         );
@@ -998,7 +1001,7 @@ async function saveSingleCategoryBudget(category) {
     const val = parseFloat(input.value);
     if (!isNaN(val) && val >= 100) {
         state.categoryBudgets[category] = val;
-        
+
         // Recalculate total monthly budget
         const sumLimits = Object.values(state.categoryBudgets).reduce((a, b) => a + Number(b), 0);
         if (sumLimits > 0) state.monthlyBudget = sumLimits;
@@ -1007,7 +1010,7 @@ async function saveSingleCategoryBudget(category) {
 
         if (window.SupabaseClient) {
             const currentMonth = new Date().toISOString().slice(0, 7);
-            window.SupabaseClient.setBudget(category, val, currentMonth).catch(() => {});
+            window.SupabaseClient.setBudget(category, val, currentMonth).catch(() => { });
         }
 
         renderBudgetView();
@@ -1105,7 +1108,7 @@ async function saveBudgetSetup() {
     // Persist to Supabase budgets table
     if (window.SupabaseClient) {
         const currentMonth = new Date().toISOString().slice(0, 7);
-        window.SupabaseClient.saveCategoryBudgets(state.categoryBudgets, currentMonth).catch(() => {});
+        window.SupabaseClient.saveCategoryBudgets(state.categoryBudgets, currentMonth).catch(() => { });
     }
 
     renderBudgetView();
@@ -1237,7 +1240,7 @@ async function handleAuthPageSubmit(e) {
     }
 
     // Step 5: Connect Button to Query with setLoading state
-    submitBtn.setLoading = function(isLoading) {
+    submitBtn.setLoading = function (isLoading) {
         if (isLoading) {
             this.disabled = true;
             this.style.opacity = '0.75';
@@ -1269,7 +1272,7 @@ async function handleAuthPageSubmit(e) {
         updateAuthUI();
         navigateTo('dashboard');
     } catch (err) {
-        const errorText = state.authMode === 'signup' 
+        const errorText = state.authMode === 'signup'
             ? (err.message || 'Signup failed. Please try again.')
             : 'Invalid email or password';
 
@@ -1345,11 +1348,11 @@ function handleAuthLogout() {
     localStorage.removeItem('sessionToken');
     localStorage.removeItem('userId');
     localStorage.removeItem('spendguard_supabase_user');
-    
+
     state.user = null;
     updateAuthUI();
     showToast('Logged out successfully.', 'info');
-    
+
     // Navigate to /login (Auth page)
     navigateTo('auth');
 }
